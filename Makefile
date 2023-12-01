@@ -4,8 +4,7 @@ all:
 .PHONY: sweeper
 
 %:
-	$(MAKE) -C sweeper
-	$(MAKE) -C $@
+	$(MAKE) -C arch/$@
 
 .PHONY: clean
 clean:

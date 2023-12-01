@@ -2,8 +2,8 @@ LD=arm-none-eabi-ld
 CC=arm-none-eabi-gcc
 CFLAGS=-Wall -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53
 
-OBJ_DIR=../objs
-BUILD_DIR=../build
+OBJ_DIR=../../objs
+BUILD_DIR=../../build
 
 SRCS=$(shell find . -name "*.s" -or -name "*.c")
 OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
