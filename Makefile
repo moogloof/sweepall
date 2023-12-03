@@ -6,6 +6,7 @@ all:
 .PHONY: sweeper
 
 %:
+	rm -rf build
 	$(MAKE) -C arch/$@
 
 .PHONY: clean
