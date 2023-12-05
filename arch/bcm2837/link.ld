@@ -1,5 +1,6 @@
 SECTIONS
 {
+	. = 0x10000;
 	.text : {
 		KEEP(*(.vectors))
 		KEEP(*(.text.boot))

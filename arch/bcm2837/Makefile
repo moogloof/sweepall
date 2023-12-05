@@ -1,19 +1,23 @@
 LD=arm-none-eabi-ld
-CC=arm-none-eabi-gcc
-CFLAGS=-Wall -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53
+export CC=arm-none-eabi-gcc
+export CFLAGS=-Wall -Werror -Wpedantic -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -I./
 
 OBJ_DIR=../../objs
 BUILD_DIR=../../build
 
 SRCS=$(shell find . -name "*.s" -or -name "*.c")
-OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
+TARGET_OBJS=$(SRCS:%=$(OBJ_DIR)/%.o)
 
 all: $(BUILD_DIR)/kernel.img
 
-$(BUILD_DIR)/kernel.img: $(OBJS)
+$(BUILD_DIR)/kernel.img: $(TARGET_OBJS) sweeper
 	mkdir -p $(dir $@)
-	$(LD) -nostdlib $(OBJS) -T link.ld -o $@.elf
+	$(LD) -nostdlib $(shell find $(OBJ_DIR) -name "*.o") -T link.ld -o $@.elf
 	arm-none-eabi-objcopy -O binary $@.elf $@
+
+.PHONY: sweeper
+sweeper:
+	$(MAKE) -C ../../sweeper
 
 $(OBJ_DIR)/%.o: %
 	mkdir -p $(dir $@)
