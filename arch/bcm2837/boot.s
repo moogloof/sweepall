@@ -1,3 +1,4 @@
+.extern main
 .section .vectors
 .global _start
 _start:
@@ -27,10 +28,7 @@ _reset:
 	bl memzero
 
 	// Call kernel
-	b halt2
+	b main
 
 halt:
 	b halt
-halt2:
-	add r0, r0, #1
-	b halt2
