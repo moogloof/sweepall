@@ -17,17 +17,20 @@ volatile struct {
 	u32 depth; // Use 24
 	u32 x_offset; // Init to 0
 	u32 y_offset; // Init to 0
-	u32* buffer_pointer; // Init to 0; set by GPU
+	u8* buffer_pointer; // Init to 0; set by GPU
 	u32 size; // Init to 0; set by GPU
 } framebuffer;
+
+// Separate framebuffer to copy over
+u8* copy_buffer = (u8*)0x30000000;
 
 void init_framebuffer() {
 	while (1) {
 		u32 mail0_read_content = 0;
 
 		// Set dimensions
-		framebuffer.width = 1920;
-		framebuffer.height = 1080;
+		framebuffer.width = RES_WIDTH;
+		framebuffer.height = RES_HEIGHT;
 		framebuffer.virtual_width = framebuffer.width;
 		framebuffer.virtual_height = framebuffer.height;
 
@@ -58,14 +61,30 @@ void init_framebuffer() {
 }
 
 void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
-	u32* pixel_address = (u32*)((u32)(framebuffer.buffer_pointer) + 3*x + framebuffer.pitch*y);
+	// Calculate start index of buffer
+	u32 buffer_index = 3*x + framebuffer.pitch*y;
 
-	for (int i = 0; i < height; i++) {
-		u32* row_address = pixel_address;
-		for (int j = 0; j < width; j++) {
-			*row_address = rgb;
-			row_address = (u32*)((u32)row_address + 3);
+	// Calculate true width and height
+	u32 true_width = width;
+	u32 true_height = height;
+
+	if (true_width + x >= RES_WIDTH)
+		true_width = RES_WIDTH - x;
+	if (true_height + y >= RES_HEIGHT)
+		true_height = RES_HEIGHT - y;
+
+	// Loop for setting
+	for (int i = 0; i < true_height; i++) {
+		for (int j = 0; j < true_width; j++) {
+			copy_buffer[buffer_index + 3*j] = rgb & 0xff;
+			copy_buffer[buffer_index + 3*j + 1] = (rgb >> 8) & 0xff;
+			copy_buffer[buffer_index + 3*j + 2] = (rgb >> 16) & 0xff;
 		}
-		pixel_address = (u32*)((u32)pixel_address + framebuffer.pitch);
+		buffer_index += framebuffer.pitch;
 	}
+}
+
+void update_framebuffer() {
+	for (int i = 0; i < RES_HEIGHT*framebuffer.pitch; i++)
+		framebuffer.buffer_pointer[i] = copy_buffer[i];
 }
