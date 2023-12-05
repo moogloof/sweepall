@@ -2,6 +2,7 @@ typedef unsigned int u32;
 typedef unsigned short u16;
 typedef unsigned char u8;
 
+// Basic functions we want from each platform
 extern void init_framebuffer();
 extern void draw_rect(u32, u32, u32, u32, u32);
 extern void update_framebuffer();
@@ -11,13 +12,14 @@ void main() {
 	u32 y = 0;
 	u32 xvel = 5;
 	u32 yvel = 5;
-	u32 w = 231;
-	u32 h = 231;
+	u32 w = 200;
+	u32 h = 200;
 	u32 color = 0xffc300;
 
+	// Setup framebuffer
 	init_framebuffer();
 
-	// Bouncing thingy
+	// Bouncing face
 	while (1) {
 		draw_rect(x, y, w, h, 0);
 		x += xvel;
