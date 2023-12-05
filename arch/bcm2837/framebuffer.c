@@ -88,6 +88,7 @@ void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
 }
 
 void update_framebuffer() {
-	for (int i = 0; i < RES_HEIGHT*framebuffer.pitch; i++)
-		framebuffer.buffer_pointer[i] = copy_buffer[i];
+	u32* buffer_pointer = (u32*)(framebuffer.buffer_pointer);
+	for (int i = 0; i < RES_HEIGHT*framebuffer.pitch / sizeof(u32); i++)
+		buffer_pointer[i] = ((u32*)copy_buffer)[i];
 }
