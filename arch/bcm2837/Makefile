@@ -1,6 +1,6 @@
 LD=arm-none-eabi-ld
 export CC=arm-none-eabi-gcc
-export CFLAGS=-Wall -Werror -Wpedantic -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -I./
+export CFLAGS=-Wall -Werror -Wpedantic -O3 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -I./
 
 OBJ_DIR=../../objs
 BUILD_DIR=../../build

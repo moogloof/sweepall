@@ -23,13 +23,13 @@ void main() {
 		x += xvel;
 		y += yvel;
 
-		if (x + w >= 1280) {
+		if (x + w >= 1920) {
 			xvel = -5;
 		} else if (x <= 0) {
 			xvel = 5;
 		}
 
-		if (y + h >= 720) {
+		if (y + h >= 1080) {
 			yvel = -5;
 		} else if (y <= 0) {
 			yvel = 5;
