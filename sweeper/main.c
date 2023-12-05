@@ -11,9 +11,9 @@ void main() {
 	u32 y = 0;
 	u32 xvel = 5;
 	u32 yvel = 5;
-	u32 w = 100;
-	u32 h = 100;
-	u32 color = 0x0000ff;
+	u32 w = 231;
+	u32 h = 231;
+	u32 color = 0xffc300;
 
 	init_framebuffer();
 
@@ -23,13 +23,13 @@ void main() {
 		x += xvel;
 		y += yvel;
 
-		if (x + w >= 1920) {
+		if (x + w >= 1280) {
 			xvel = -5;
 		} else if (x <= 0) {
 			xvel = 5;
 		}
 
-		if (y + h >= 1080) {
+		if (y + h >= 720) {
 			yvel = -5;
 		} else if (y <= 0) {
 			yvel = 5;

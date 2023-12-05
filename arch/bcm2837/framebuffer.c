@@ -61,6 +61,9 @@ void init_framebuffer() {
 }
 
 void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
+	// Just exit if x and y outside
+	if (x >= RES_WIDTH || y >= RES_HEIGHT) return;
+
 	// Calculate start index of buffer
 	u32 buffer_index = 3*x + framebuffer.pitch*y;
 
