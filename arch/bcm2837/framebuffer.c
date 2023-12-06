@@ -87,6 +87,33 @@ void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
 	}
 }
 
+void draw_image(u8* image, u32 x, u32 y, u32 width, u32 height, u32 pitch) {
+	// Just exit if x and y outside
+	if (x >= RES_WIDTH || y >= RES_HEIGHT) return;
+
+	// Calculate start index of buffer
+	u32 buffer_index = 3*x + framebuffer.pitch*y;
+
+	// Calculate true width and height
+	u32 true_width = width;
+	u32 true_height = height;
+
+	if (true_width + x >= RES_WIDTH)
+		true_width = RES_WIDTH - x;
+	if (true_height + y >= RES_HEIGHT)
+		true_height = RES_HEIGHT - y;
+
+	// Loop for setting
+	for (int i = 0; i < true_height; i++) {
+		for (int j = 0; j < true_width; j++) {
+			copy_buffer[buffer_index + 3*j] = image[3*j + pitch*i];
+			copy_buffer[buffer_index + 3*j + 1] = image[3*j + pitch*i + 1];
+			copy_buffer[buffer_index + 3*j + 2] = image[3*j + pitch*i + 2];
+		}
+		buffer_index += framebuffer.pitch;
+	}
+}
+
 void update_framebuffer() {
 	u32* buffer_pointer = (u32*)(framebuffer.buffer_pointer);
 	for (int i = 0; i < RES_HEIGHT*framebuffer.pitch / sizeof(u32); i++)
