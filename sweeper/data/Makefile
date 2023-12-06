@@ -1,4 +1,3 @@
-OBJCOPY=arm-none-eabi-objcopy
 OBJ_DIR=../../objs
 
 BINARIES=$(shell find . -name "*.bmp")
