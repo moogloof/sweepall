@@ -24,6 +24,9 @@ void main() {
 	// Setup framebuffer
 	init_framebuffer();
 
+	// Preprocess face image
+	preprocess_image(&_binary_face_bmp_start);
+
 	// Bouncing face
 	while (1) {
 		draw_rect(x, y, w, h, 0);

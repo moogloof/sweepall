@@ -20,4 +20,7 @@ typedef struct {
 	unsigned int important_colors; // Important colors
 } __attribute__((packed)) bmp_header;
 
+// Preprocess BMP image to be drawable
+void preprocess_image(bmp_header*);
+
 #endif

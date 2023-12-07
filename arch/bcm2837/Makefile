@@ -1,6 +1,6 @@
 LD=arm-none-eabi-ld
 export CC=arm-none-eabi-gcc
-export CFLAGS=-Wall -Werror -Wpedantic -O3 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -I./
+export CFLAGS=-Wall -Werror -Wpedantic -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -ggdb -I./
 export OBJCOPY=arm-none-eabi-objcopy
 export OBJCOPY_FLAGS=-O elf32-littlearm
 
@@ -15,7 +15,7 @@ all: $(BUILD_DIR)/kernel.img
 $(BUILD_DIR)/kernel.img: $(TARGET_OBJS) sweeper
 	mkdir -p $(dir $@)
 	$(LD) -nostdlib $(shell find $(OBJ_DIR) -name "*.o") -T link.ld -o $@.elf
-	arm-none-eabi-objcopy -O binary $@.elf $@
+	$(OBJCOPY) --strip-debug -O binary $@.elf $@
 
 .PHONY: sweeper
 sweeper:
