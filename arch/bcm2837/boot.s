@@ -15,8 +15,7 @@ _start:
 _reset:
 	// Shutoff extra cores
 	mrc p15, 0, r5, c0, c0, 5
-	and r5, r5, #3
-	cmp r5, #0
+	ands r5, r5, #3
 	bne halt
 
 	// Setup stack
