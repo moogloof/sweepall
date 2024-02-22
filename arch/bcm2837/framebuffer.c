@@ -44,7 +44,7 @@ void init_framebuffer() {
 	mailbox_buffer[16] = 0x48006;
 	mailbox_buffer[17] = 4;
 	mailbox_buffer[18] = 0;
-	mailbox_buffer[19] = 0;
+	mailbox_buffer[19] = 1;
 
 	// End tag
 	mailbox_buffer[20] = 0;
