@@ -3,7 +3,6 @@
 
 #include <mmio.h>
 
-#define MAIL0_BASE 0x7e00b880
 #define RES_WIDTH 1920
 #define RES_HEIGHT 1080
 

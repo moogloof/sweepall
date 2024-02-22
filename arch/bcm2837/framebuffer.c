@@ -1,62 +1,87 @@
 #include <framebuffer.h>
-
-// MMIO ports
-// Source: https://elinux.org/RPi_Framebuffer#Memory_mapped_registers
-volatile u32 mail0_read = MAIL0_BASE;
-volatile u32 mail0_status = MAIL0_BASE + 0x18;
-volatile u32 mail0_write = MAIL0_BASE + 0x20;
+#include <mailbox.h>
 
 // Mailbox buffer
-volatile struct {
-	u32 width; // Check VideoCore 4 support
-	u32 height; // Check VideoCore 4 support
-	u32 virtual_width; // Set to width
-	u32 virtual_height; // Set to height
-	u32 pitch; // Init to 0; set by GPU
-	u32 depth; // Use 24
-	u32 x_offset; // Init to 0
-	u32 y_offset; // Init to 0
-	u8* buffer_pointer; // Init to 0; set by GPU
-	u32 size; // Init to 0; set by GPU
-} mailbox_buffer;
+// Arbitrarily long length
+volatile u32 mailbox_buffer[256] __attribute__((aligned(16)));
+
+// Framebuffer info
+struct {
+	u32 buffer_pointer;
+	u32 pitch;
+} framebuffer;
 
 // Separate framebuffer to copy over
 u8* copy_buffer = (u8*)0x30000000;
 
 void init_framebuffer() {
-	while (1) {
-		u32 mail0_read_content = 0;
+	// Set size of preset buffer
+	mailbox_buffer[0] = 96;
+	// Set request code
+	mailbox_buffer[1] = 0;
 
-		// Set dimensions
-		framebuffer.width = RES_WIDTH;
-		framebuffer.height = RES_HEIGHT;
-		framebuffer.virtual_width = framebuffer.width;
-		framebuffer.virtual_height = framebuffer.height;
+	// First tag to set width and height of screen
+	mailbox_buffer[2] = 0x48003;
+	mailbox_buffer[3] = 8;
+	mailbox_buffer[4] = 0;
+	mailbox_buffer[5] = RES_WIDTH;
+	mailbox_buffer[6] = RES_HEIGHT;
 
-		// Set pixel stuff
-		framebuffer.pitch = 0;
-		framebuffer.depth = 24;
-		framebuffer.x_offset = 0;
-		framebuffer.y_offset = 0;
+	// Second tag to set virtual width and height of screen
+	mailbox_buffer[7] = 0x48004;
+	mailbox_buffer[8] = 8;
+	mailbox_buffer[9] = 0;
+	mailbox_buffer[10] = RES_WIDTH;
+	mailbox_buffer[11] = RES_HEIGHT;
 
-		// Buffer
-		framebuffer.buffer_pointer = 0;
-		framebuffer.size = 0;
+	// Third tag to set depth of pixel
+	mailbox_buffer[12] = 0x48005;
+	mailbox_buffer[13] = 4;
+	mailbox_buffer[14] = 0;
+	mailbox_buffer[15] = 24;
 
-		// Wait till channel open
-		while (mmio_read(mail0_status) >> 31);
-		mmio_write(mail0_write, ((u32)(&framebuffer) & 0xfffffff0) | 1);
+	// Fourth tag to set pixel order
+	mailbox_buffer[16] = 0x48006;
+	mailbox_buffer[17] = 4;
+	mailbox_buffer[18] = 0;
+	mailbox_buffer[19] = 0;
 
-		while ((mail0_read_content & 0xf) != 1) {
-			// Wait till channel not empty
-			while ((mmio_read(mail0_status) >> 30) & 1);
-			mail0_read_content = mmio_read(mail0_read);
-		}
+	// End tag
+	mailbox_buffer[20] = 0;
+	// Padded tags
+	mailbox_buffer[21] = 0;
+	mailbox_buffer[22] = 0;
+	mailbox_buffer[23] = 0;
 
-		// Check if valid read
-		if (!(mail0_read_content >> 4))
-			break;
-	}
+	// Send mailbox buffer through mailbox_buffer
+	write_mailbox((u32)mailbox_buffer | 8);
+
+	// Set size of fetch buffer
+	mailbox_buffer[0] = 40;
+	// Set request code
+	mailbox_buffer[1] = 0;
+
+	// First tag to get pitch of screen
+	mailbox_buffer[2] = 0x40008;
+	mailbox_buffer[3] = 4;
+	mailbox_buffer[4] = 0;
+	mailbox_buffer[5] = 0;
+
+	// Second tag to get framebuffer of screen
+	mailbox_buffer[6] = 0x40001;
+	mailbox_buffer[7] = 8;
+	mailbox_buffer[8] = 0;
+	mailbox_buffer[9] = 16;
+	mailbox_buffer[10] = 0;
+
+	// End tag
+	mailbox_buffer[11] = 0;
+
+	// Send mailbox buffer through mailbox
+	write_mailbox((u32)mailbox_buffer | 8);
+
+	framebuffer.pitch = mailbox_buffer[5];
+	framebuffer.buffer_pointer = mailbox_buffer[10];
 }
 
 void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
