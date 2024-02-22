@@ -55,9 +55,10 @@ void init_framebuffer() {
 
 	// Send mailbox buffer through mailbox_buffer
 	write_mailbox((u32)mailbox_buffer | 8);
+	read_mailbox(8);
 
 	// Set size of fetch buffer
-	mailbox_buffer[0] = 40;
+	mailbox_buffer[0] = 48;
 	// Set request code
 	mailbox_buffer[1] = 0;
 
@@ -79,9 +80,10 @@ void init_framebuffer() {
 
 	// Send mailbox buffer through mailbox
 	write_mailbox((u32)mailbox_buffer | 8);
+	read_mailbox(8);
 
 	framebuffer.pitch = mailbox_buffer[5];
-	framebuffer.buffer_pointer = mailbox_buffer[10];
+	framebuffer.buffer_pointer = mailbox_buffer[9];
 }
 
 void draw_rect(u32 x, u32 y, u32 width, u32 height, u32 rgb) {
