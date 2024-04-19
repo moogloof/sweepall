@@ -1,6 +1,6 @@
 LD=arm-none-eabi-ld
 export CC=arm-none-eabi-gcc
-export CFLAGS=-Wall -Werror -Wpedantic -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=cortex-a53 -ggdb -I./
+export CFLAGS=-Wall -Werror -Wpedantic -O0 -ffreestanding -nostdinc -nostdlib -nostartfiles -mcpu=arm1176jzf-s -ggdb -I./
 export OBJCOPY=arm-none-eabi-objcopy
 export OBJCOPY_FLAGS=-O elf32-littlearm
 
