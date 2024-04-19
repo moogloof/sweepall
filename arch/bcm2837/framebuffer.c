@@ -12,7 +12,7 @@ struct {
 } framebuffer;
 
 // Separate framebuffer to copy over
-u8* copy_buffer = (u8*)0x30000000;
+u8 copy_buffer[RES_WIDTH * RES_HEIGHT * 4];
 
 void init_framebuffer() {
 	// Set size of preset buffer
