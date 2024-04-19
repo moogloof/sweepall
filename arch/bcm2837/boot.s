@@ -19,7 +19,7 @@ _reset:
 	bne halt
 
 	// Setup stack
-	mov sp, #0x30000000
+	mov sp, #0x800000
 
 	// BSS clear
 	ldr r0, =_sbss
